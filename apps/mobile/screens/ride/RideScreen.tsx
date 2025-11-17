@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, Platform, Animated, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -37,12 +37,29 @@ const RideScreen = ({ navigation }: RideScreenProps) => {
     // navigation.navigate('SearchDestination'); 
   };
 
-  // Function to open the profile or side menu
-  const handleMenuPress = () => {
-    // You will need to register 'Profile' or a drawer navigator later
-    alert('Opening Profile/Menu');
-    // navigation.navigate('Profile'); 
+  // Drawer state & animations
+  const drawerWidth = Math.min(Dimensions.get('window').width * 0.75, 360);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const drawerAnim = useRef(new Animated.Value(-drawerWidth)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
+
+  const handleMenuPress = async () => {
+    const opening = !menuOpen;
+    if (opening) {
+      try {
+        const Haptics = await import('expo-haptics');
+        await Haptics.selectionAsync();
+      } catch {}
+    }
+    setMenuOpen(opening);
   };
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(drawerAnim, { toValue: menuOpen ? 0 : -drawerWidth, duration: 260, useNativeDriver: true }),
+      Animated.timing(backdropAnim, { toValue: menuOpen ? 1 : 0, duration: 260, useNativeDriver: true }),
+    ]).start();
+  }, [menuOpen, drawerAnim, backdropAnim, drawerWidth]);
   
   return (
     <View style={styles.container}>
@@ -54,10 +71,39 @@ const RideScreen = ({ navigation }: RideScreenProps) => {
         <TouchableOpacity 
           style={styles.menuButton}
           onPress={handleMenuPress}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons name="menu" size={28} color={PRIMARY_COLOR} />
         </TouchableOpacity>
       </SafeAreaView>
+
+      {/* Backdrop */}
+      {menuOpen && (
+        <Animated.View pointerEvents={menuOpen ? 'auto' : 'none'} style={[StyleSheet.absoluteFillObject, styles.backdrop, { opacity: backdropAnim }]}>
+          <Pressable style={{ flex: 1 }} onPress={() => setMenuOpen(false)} />
+        </Animated.View>
+      )}
+
+      {/* Left Drawer */}
+      <Animated.View style={[styles.drawer, { width: drawerWidth, transform: [{ translateX: drawerAnim }] }]}> 
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.drawerHeaderRow}>
+            <Text style={styles.drawerTitle}>Menu</Text>
+            <TouchableOpacity onPress={() => setMenuOpen(false)}><Ionicons name="close" size={24} color={TEXT_COLOR_DARK} /></TouchableOpacity>
+          </View>
+          <View style={styles.drawerItems}>
+            <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuOpen(false)}>
+              <Text style={styles.drawerItemText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuOpen(false)}>
+              <Text style={styles.drawerItemText}>Trips</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuOpen(false)}>
+              <Text style={styles.drawerItemText}>Settings</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Animated.View>
 
       {/* 3. Bottom Sheet Search Interface */}
       <View style={styles.bottomSheet}>
@@ -112,8 +158,54 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    paddingTop: Platform.OS === 'android' ? 30 : 0, // Adjust for Android status bar
-    zIndex: 10,
+    paddingTop: Platform.OS === 'android' ? 30 : 0,
+    zIndex: 30,
+    ...Platform.select({ android: { elevation: 20 } }),
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    zIndex: 25,
+  },
+  drawer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: '#FFFFFF',
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 12 : 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 10,
+    zIndex: 35,
+  },
+  drawerHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EFEFEF',
+  },
+  drawerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: TEXT_COLOR_DARK,
+  },
+  drawerItems: {
+    paddingVertical: 12,
+  },
+  drawerItem: {
+    paddingVertical: 14,
+  },
+  drawerItemText: {
+    fontSize: 16,
+    color: TEXT_COLOR_DARK,
+    fontWeight: '700',
   },
   menuButton: {
     backgroundColor: '#FFFFFF',

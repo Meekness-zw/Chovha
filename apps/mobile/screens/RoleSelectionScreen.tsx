@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Dimensions, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -69,9 +69,11 @@ const RoleSelectionScreen = ({ navigation }: any) => { // Use 'any' for navigati
       {/* ScrollView added to prevent clipping on smaller screens */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
-            {/* Replaced Image with a View to maintain the illustration's vertical spacing */}
-            <View style={styles.illustrationImage} />
-            {/* ----------------------------------- */}
+            <Image
+              source={require('../assets/Logo.png')}
+              style={styles.illustrationImage}
+              resizeMode="contain"
+            />
 
             <Text style={styles.title}>Welcome to Chovha</Text>
             <Text style={styles.subtitle}>Choose your role to continue</Text>
@@ -122,12 +124,11 @@ const styles = StyleSheet.create({
   },
   // Style for the placeholder space
   illustrationImage: {
-    width: '100%',
-    height: width * 0.4, // Responsive height based on screen width
-    borderRadius: 15,
-    marginTop: 60, 
+    width: '70%',
+    height: width * 0.35, // Responsive height based on screen width
+    marginTop: 60,
     marginBottom: 40,
-    backgroundColor: '#F3F8FF', // Light background color remains to show the allocated space
+    alignSelf: 'center',
   },
   title: {
     fontSize: 28, // Slightly reduced size

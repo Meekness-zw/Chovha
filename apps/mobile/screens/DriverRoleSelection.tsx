@@ -19,18 +19,6 @@ const TEXT_COLOR_DARK = '#1C1C1C';
 const TEXT_COLOR_GREY = '#6A6A6A';
 
 const DriverRoleSelectionScreen = ({ navigation }: DriverRoleSelectionScreenProps) => {
-
-  const handleSelectOption = (action: 'login' | 'signup') => {
-    if (action === 'login') {
-      // Existing Driver: Navigates straight to the login form
-      navigation.navigate('DriverLogin');
-    } else {
-      // 🟢 FIX 2: Pass the explicit 'driver' role when navigating to PhoneInput.
-      // This parameter is used by OTPConfirmation to select the correct next screen (DriverSignUp).
-      navigation.navigate('PhoneInput', { role: 'driver' }); 
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -42,23 +30,23 @@ const DriverRoleSelectionScreen = ({ navigation }: DriverRoleSelectionScreenProp
         </TouchableOpacity>
         
         <Text style={styles.title}>Drive with us</Text>
-        <Text style={styles.subtitle}>Select an option to proceed</Text>
+        <Text style={styles.subtitle}>Choose your driver type</Text>
 
         <View style={styles.buttonContainer}>
-          {/* Sign Up Button (New Driver) */}
+          {/* Individual Driver */}
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: PRIMARY_COLOR }]}
-            onPress={() => handleSelectOption('signup')} // Now passes { role: 'driver' }
+            onPress={() => navigation.navigate('PhoneInput', { role: 'driver' })}
           >
-            <Text style={styles.buttonText}>SIGN UP</Text>
+            <Text style={styles.buttonText}>INDIVIDUAL DRIVER</Text>
           </TouchableOpacity>
 
-          {/* Login Button (Existing Driver) */}
+          {/* Fleet Manager */}
           <TouchableOpacity
             style={[styles.actionButton, styles.loginButton]}
-            onPress={() => handleSelectOption('login')}
+            onPress={() => navigation.navigate('FleetManager' as never)}
           >
-            <Text style={[styles.buttonText, { color: TEXT_COLOR_DARK }]}>LOG IN</Text>
+            <Text style={[styles.buttonText, { color: TEXT_COLOR_DARK }]}>MANAGE A FLEET</Text>
           </TouchableOpacity>
         </View>
         

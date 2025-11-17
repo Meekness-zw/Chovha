@@ -23,8 +23,8 @@ const { width } = Dimensions.get('window');
 type RideTimeOption = 'now' | 'later';
 
 const PickupTimeModal = ({ navigation }: PickupTimeModalProps) => { // 🟢 FIX: Added navigation prop
-  // Sets the default selection to 'Now', as shown in the design
-  const [selectedOption, setSelectedOption] = useState<RideTimeOption>('now');
+  // Default to 'Later' since 'Now' option is removed
+  const [selectedOption, setSelectedOption] = useState<RideTimeOption>('later');
 
   const handleDone = () => {
     // 1. Close the modal
@@ -86,16 +86,6 @@ const PickupTimeModal = ({ navigation }: PickupTimeModalProps) => { // 🟢 FIX:
         
         <Text style={styles.title}>When do you need a ride?</Text>
 
-        <SelectionRow
-          label="Now"
-          description="Request a ride, hop-in, and ride"
-          iconName="time-outline" // 🟢 FIX: Ionicons name
-          option="now"
-        />
-        
-        {/* Separator to match the gap between options */}
-        <View style={styles.separator} /> 
-        
         <SelectionRow
           label="Later"
           description="Reserve for extra peace of mind"

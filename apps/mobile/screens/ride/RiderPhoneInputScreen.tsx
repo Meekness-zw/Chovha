@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../../App'; // Import the RootStackParamList type
@@ -26,7 +26,8 @@ const RiderPhoneInputScreen = ({ navigation }: RiderPhoneInputScreenProps) => {
       // Logic to send the OTP code here...
 
       // Navigate to OTP Confirmation, passing role for subsequent routing
-      navigation.navigate('RiderOTPConfirmationScreen');
+      const formatted = `${countryCode} ${phoneNumber}`;
+      navigation.navigate('RiderOTPConfirmationScreen', { role: 'rider', phoneNumber: formatted });
     } else {
       alert('Please enter a valid phone number.');
     }
@@ -34,6 +35,8 @@ const RiderPhoneInputScreen = ({ navigation }: RiderPhoneInputScreenProps) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1 }}>
       <View style={styles.headerContainer}>
         <TouchableOpacity 
           style={styles.backButton} 
@@ -86,6 +89,8 @@ const RiderPhoneInputScreen = ({ navigation }: RiderPhoneInputScreenProps) => {
           </Text>
         </TouchableOpacity>
       </View>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };

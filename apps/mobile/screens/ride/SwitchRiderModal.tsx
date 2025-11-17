@@ -22,7 +22,7 @@ const RADIO_SIZE = 22;
 type RiderOption = 'me' | 'add_new';
 
 const SwitchRiderModal = ({ navigation }: SwitchRiderModalProps) => {
-  const [selectedOption, setSelectedOption] = useState<RiderOption>('me');
+  const [selectedOption, setSelectedOption] = useState<RiderOption>('add_new');
 
   const handleDone = () => {
     navigation.goBack(); // Dismiss the modal
@@ -66,19 +66,6 @@ const SwitchRiderModal = ({ navigation }: SwitchRiderModalProps) => {
         <Text style={styles.title}>
           Switch Rider
         </Text>
-
-        {/* Option: Me */}
-        <RadioButton
-          selected={selectedOption === 'me'}
-          label="Me"
-          subtext="Request a ride, hop-in, and ride"
-          iconName="person-outline"
-          option="me"
-          onPress={() => setSelectedOption('me')}
-        />
-        
-        {/* Separator */}
-        <View style={styles.separator} />
 
         {/* Option: Add new contact */}
         <RadioButton
